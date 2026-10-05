@@ -1,0 +1,3 @@
+audio/advertisements/ad_01.mp3
+audio/advertisements/ad_02.mp3
+audio/advertisements/ad_03.mp3

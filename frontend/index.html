@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+    <title>Rwanda Bus Media</title>
+
+    <style>
+
+        body {
+            font-family: Arial, sans-serif;
+            background: #f2f2f2;
+            margin: 0;
+            padding: 30px;
+        }
+
+        h1 {
+            text-align: center;
+        }
+
+        .bus {
+            background: white;
+            padding: 20px;
+            margin: 20px auto;
+            max-width: 700px;
+            border-radius: 10px;
+        }
+
+        button {
+            padding: 10px 15px;
+            margin: 5px;
+            cursor: pointer;
+        }
+
+        select {
+            padding: 10px;
+        }
+
+        input {
+            width: 80%;
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+<h1>🚍 Rwanda Bus Media</h1>
+
+<div id="buses"></div>
+
+<script>
+
+async function loadBuses() {
+
+    const response =
+        await fetch(
+            "http://127.0.0.1:5000/buses"
+        );
+
+    const buses =
+        await response.json();
+
+    const container =
+        document.getElementById("buses");
+
+    container.innerHTML = "";
+
+    buses.forEach(bus => {
+
+        const busDiv =
+            document.createElement("div");
+
+        busDiv.className = "bus";
+
+        busDiv.innerHTML = `
+
+            <h2>${bus.bus_id}</h2>
+
+            <p>
+                Route:
+                ${bus.route}
+            </p>
+
+            <p>
+                Status:
+                ${bus.status}
+            </p>
+
+            <p>
+                Current Ad:
+                ${bus.current_ad}
+            </p>
+
+            <label>
+                Volume:
+            </label>
+
+            <input
+                type="range"
+                min="0"
+                max="100"
+                value="${bus.volume}"
+                id="volume-${bus.bus_id}"
+            >
+
+            <span>
+                ${bus.volume}%
+            </span>
+
+            <br><br>
+
+            <button
+                onclick="
+                changeVolume('${bus.bus_id}')
+                "
+            >
+                Change Volume
+            </button>
+
+            <br><br>
+
+            <select id="ad-${bus.bus_id}">
+
+                <option value="ad_01.mp3">
+                    Advertisement 1
+                </option>
+
+                <option value="ad_02.mp3">
+                    Advertisement 2
+                </option>
+
+                <option value="ad_03.mp3">
+                    Advertisement 3
+                </option>
+
+            </select>
+
+            <button
+                onclick="
+                changeAdvertisement(
+                    '${bus.bus_id}'
+                )
+                "
+            >
+                Play Advertisement
+            </button>
+
+        `;
+
+        container.appendChild(busDiv);
+
+    });
+
+}
+
+
+async function changeVolume(busId) {
+
+    const volume =
+        document.getElementById(
+            `volume-${busId}`
+        ).value;
+
+    await fetch(
+        `http://127.0.0.1:5000/buses/${busId}/volume/${volume}`,
+        {
+            method: "POST"
+        }
+    );
+
+    alert(
+        `${busId} volume changed to ${volume}%`
+    );
+
+}
+
+
+async function changeAdvertisement(busId) {
+
+    const ad =
+        document.getElementById(
+            `ad-${busId}`
+        ).value;
+
+    await fetch(
+        `http://127.0.0.1:5000/buses/${busId}/advertisement/${ad}`,
+        {
+            method: "POST"
+        }
+    );
+
+    alert(
+        `${busId} advertisement changed to ${ad}`
+    );
+
+}
+
+
+loadBuses();
+
+</script>
+
+</body>
+
+</html>
